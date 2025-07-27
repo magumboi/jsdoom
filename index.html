@@ -29,6 +29,20 @@
                 console.log("App '" + app + "' is runned");
             }
         });
+
+        // Automatically click the dosbox-start button when page loads
+        window.addEventListener('load', function() {
+            // Wait a short moment for dosbox to fully initialize
+            setTimeout(function() {
+                var startButton = document.querySelector('.dosbox-start');
+                if (startButton) {
+                    startButton.click();
+                    console.log("Auto-clicked dosbox-start button");
+                } else {
+                    console.log("dosbox-start button not found");
+                }
+            }, 500); // 500ms delay to ensure everything is loaded
+        });
     </script>
 </body>
 
