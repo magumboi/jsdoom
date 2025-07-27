@@ -30,19 +30,45 @@
             }
         });
 
-        // Automatically click the dosbox-start button when page loads
-/*         window.addEventListener('load', function() {
-            // Wait a short moment for dosbox to fully initialize
-            setTimeout(function() {
+        // Automatically click the dosbox-start button after first user interaction
+        var hasUserInteracted = false;
+        var dosboxReady = false;
+        
+        function tryAutoStart() {
+            if (hasUserInteracted && dosboxReady) {
                 var startButton = document.querySelector('.dosbox-start');
                 if (startButton) {
                     startButton.click();
-                    console.log("Auto-clicked dosbox-start button");
+                    console.log("Auto-clicked dosbox-start button with audio support");
                 } else {
                     console.log("dosbox-start button not found");
                 }
-            }, 500); // 500ms delay to ensure everything is loaded
-        }); */
+            }
+        }
+        
+        // Wait for first user interaction (click, touch, or key press)
+        function enableAutoStart() {
+            hasUserInteracted = true;
+            console.log("User interaction detected, enabling auto-start");
+            tryAutoStart();
+            // Remove the event listeners since we only need one interaction
+            document.removeEventListener('click', enableAutoStart);
+            document.removeEventListener('touchstart', enableAutoStart);
+            document.removeEventListener('keydown', enableAutoStart);
+        }
+        
+        document.addEventListener('click', enableAutoStart);
+        document.addEventListener('touchstart', enableAutoStart);
+        document.addEventListener('keydown', enableAutoStart);
+        
+        // Wait for dosbox to be ready
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                dosboxReady = true;
+                console.log("Dosbox ready, waiting for user interaction");
+                tryAutoStart();
+            }, 500);
+        });
     </script>
 </body>
 
