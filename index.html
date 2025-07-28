@@ -9,177 +9,243 @@
     <link rel="stylesheet" type="text/css" href="./style.css">
     <link rel="stylesheet" type="text/css" href="./styles/button.css">
     <style>
+        /* Desktop Controls Table */
+        .controls-table {
+            display: block;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+
+        .controls-table.hidden {
+            display: none;
+        }
+
+        .controls-table h3 {
+            margin-top: 0;
+            color: #ff6666;
+            text-align: center;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .control-group {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .control-group h4 {
+            margin: 0 0 8px 0;
+            color: #66ff66;
+            font-size: 14px;
+        }
+
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+            font-size: 12px;
+        }
+
+        .key {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
         /* Mobile Touch Controls */
         .mobile-controls {
             display: none;
             position: relative;
             width: 100%;
-            height: 300px;
-            background: rgba(0, 0, 0, 0.8);
+            height: 350px;
+            background: rgba(0, 0, 0, 0.9);
             margin-top: 10px;
+            border-radius: 8px;
         }
 
         .mobile-controls.active {
             display: block;
         }
 
-        /* Virtual Joystick - Left Side */
-        .virtual-joystick {
+        /* Movement D-Pad */
+        .movement-dpad {
             position: absolute;
-            bottom: 40px;
-            left: 40px;
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            pointer-events: auto;
-            touch-action: none;
+            left: 30px;
+            bottom: 50px;
+            width: 140px;
+            height: 140px;
         }
 
-        .joystick-knob {
+        .dpad-button {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid rgba(255, 255, 255, 1);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.1s ease;
-            pointer-events: none;
-        }
-
-        /* Aim Area - Right Side */
-        .aim-area {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 45%;
-            height: 60%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            pointer-events: auto;
-            touch-action: none;
+            background: rgba(100, 150, 255, 0.3);
+            border: 2px solid rgba(100, 150, 255, 0.6);
+            color: white;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 14px;
-            font-weight: bold;
+            user-select: none;
+            touch-action: manipulation;
+            border-radius: 6px;
         }
 
-        .aim-area::before {
-            content: "AIM AREA\nDrag to look around";
-            text-align: center;
-            white-space: pre-line;
+        .dpad-button:active {
+            background: rgba(100, 150, 255, 0.7);
+            transform: scale(0.95);
         }
 
-        /* Action Buttons */
-        .action-buttons {
+        .dpad-up {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+        }
+
+        .dpad-down {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+        }
+
+        .dpad-left {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+        }
+
+        .dpad-right {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Action Buttons - Right Side */
+        .action-area {
             position: absolute;
-            bottom: 20px;
             right: 20px;
+            bottom: 20px;
             width: 200px;
-            height: 120px;
-            pointer-events: none;
+            height: 200px;
         }
 
-        .touch-button {
+        .action-button {
             position: absolute;
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 8px;
             color: white;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            pointer-events: auto;
             user-select: none;
             touch-action: manipulation;
         }
 
-        .touch-button:active {
+        .action-button:active {
             background: rgba(255, 255, 255, 0.4);
-            border-color: rgba(255, 255, 255, 0.6);
             transform: scale(0.95);
         }
 
         .btn-fire {
-            bottom: 60px;
-            right: 0;
-            width: 70px;
-            height: 50px;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
             background: rgba(255, 50, 50, 0.4);
             border-color: rgba(255, 50, 50, 0.6);
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 14px;
+            border-radius: 50%;
         }
 
         .btn-fire:active {
             background: rgba(255, 50, 50, 0.7);
         }
 
-        .btn-action {
-            bottom: 60px;
+        .btn-use {
+            bottom: 140px;
             right: 80px;
             width: 50px;
             height: 50px;
             background: rgba(50, 255, 50, 0.4);
             border-color: rgba(50, 255, 50, 0.6);
-            font-size: 12px;
         }
 
-        .btn-action:active {
+        .btn-use:active {
             background: rgba(50, 255, 50, 0.7);
         }
 
         .btn-run {
-            bottom: 10px;
-            right: 40px;
+            bottom: 20px;
+            right: 80px;
             width: 50px;
-            height: 40px;
-            background: rgba(50, 50, 255, 0.4);
-            border-color: rgba(50, 50, 255, 0.6);
-            font-size: 12px;
-        }
-
-        .btn-run:active {
-            background: rgba(50, 50, 255, 0.7);
-        }
-
-        .btn-weapon {
-            bottom: 10px;
-            right: 100px;
-            width: 60px;
             height: 40px;
             background: rgba(255, 255, 50, 0.4);
             border-color: rgba(255, 255, 50, 0.6);
-            font-size: 11px;
         }
 
-        .btn-weapon:active {
+        .btn-run:active {
             background: rgba(255, 255, 50, 0.7);
         }
 
-        /* Menu Button */
-        .btn-menu {
-            position: absolute;
-            top: 20px;
-            left: 200px;
-            width: 60px;
+        .btn-strafe {
+            bottom: 80px;
+            right: 140px;
+            width: 50px;
             height: 40px;
-            background: rgba(128, 128, 128, 0.4);
-            border-color: rgba(128, 128, 128, 0.6);
-            font-size: 12px;
-            pointer-events: auto;
+            background: rgba(50, 255, 255, 0.4);
+            border-color: rgba(50, 255, 255, 0.6);
         }
 
-        .btn-menu:active {
+        .btn-strafe:active {
+            background: rgba(50, 255, 255, 0.7);
+        }
+
+        /* Menu and Map buttons */
+        .utility-buttons {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .utility-button {
+            background: rgba(128, 128, 128, 0.4);
+            border: 2px solid rgba(128, 128, 128, 0.6);
+            color: white;
+            padding: 8px 12px;
+            margin: 0 5px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            user-select: none;
+            touch-action: manipulation;
+            display: inline-block;
+        }
+
+        .utility-button:active {
             background: rgba(128, 128, 128, 0.7);
+            transform: scale(0.95);
         }
 
 
@@ -202,26 +268,82 @@
         <div id="dosbox"></div>
     </div>
 
+    <!-- Desktop Controls Table -->
+    <div class="controls-table" id="controlsTable">
+        <h3>🎮 DOOM Controls</h3>
+        <div class="controls-grid">
+            <div class="control-group">
+                <h4>Movement</h4>
+                <div class="control-item">
+                    <span>Move Forward:</span>
+                    <span class="key">↑</span>
+                </div>
+                <div class="control-item">
+                    <span>Move Backward:</span>
+                    <span class="key">↓</span>
+                </div>
+                <div class="control-item">
+                    <span>Turn Left:</span>
+                    <span class="key">←</span>
+                </div>
+                <div class="control-item">
+                    <span>Turn Right:</span>
+                    <span class="key">→</span>
+                </div>
+                <div class="control-item">
+                    <span>Run:</span>
+                    <span class="key">Shift</span>
+                </div>
+                <div class="control-item">
+                    <span>Strafe:</span>
+                    <span class="key">Alt</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <h4>Actions</h4>
+                <div class="control-item">
+                    <span>Fire:</span>
+                    <span class="key">Ctrl</span>
+                </div>
+                <div class="control-item">
+                    <span>Use/Open:</span>
+                    <span class="key">Space</span>
+                </div>
+                <div class="control-item">
+                    <span>Menu:</span>
+                    <span class="key">Esc</span>
+                </div>
+                <div class="control-item">
+                    <span>Map:</span>
+                    <span class="key">Tab</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile Touch Controls -->
     <div class="mobile-controls" id="mobileControls">
-        <!-- Virtual Joystick - Left Side -->
-        <div class="virtual-joystick" id="virtualJoystick">
-            <div class="joystick-knob" id="joystickKnob"></div>
+        <!-- Movement D-Pad -->
+        <div class="movement-dpad">
+            <div class="dpad-button dpad-up" data-key="ArrowUp">↑</div>
+            <div class="dpad-button dpad-down" data-key="ArrowDown">↓</div>
+            <div class="dpad-button dpad-left" data-key="ArrowLeft">←</div>
+            <div class="dpad-button dpad-right" data-key="ArrowRight">→</div>
         </div>
-
-        <!-- Aim Area - Right Side -->
-        <div class="aim-area" id="aimArea"></div>
 
         <!-- Action Buttons -->
-        <div class="action-buttons">
-            <div class="touch-button btn-fire" data-key="Control">FIRE</div>
-            <div class="touch-button btn-action" data-key=" ">USE</div>
-            <div class="touch-button btn-run" data-key="Shift">RUN</div>
-            <div class="touch-button btn-weapon" data-key="Tab">WEAPON</div>
+        <div class="action-area">
+            <div class="action-button btn-fire" data-key="Control">FIRE</div>
+            <div class="action-button btn-use" data-key=" ">USE</div>
+            <div class="action-button btn-run" data-key="Shift">RUN</div>
+            <div class="action-button btn-strafe" data-key="Alt">STRAFE</div>
         </div>
 
-        <!-- Menu Button -->
-        <div class="touch-button btn-menu" data-key="Escape">MENU</div>
+        <!-- Utility Buttons -->
+        <div class="utility-buttons">
+            <div class="utility-button" data-key="Escape">MENU</div>
+            <div class="utility-button" data-key="Tab">MAP</div>
+        </div>
     </div>
 
     <script type="text/javascript" src="./script.js"></script>
@@ -233,8 +355,8 @@
             },
             onrun: function (dosbox, app) {
                 console.log("App '" + app + "' is runned");
-                // Initialize mobile controls after the game is running
-                initMobileControls();
+                // Initialize controls after the game is running
+                initializeControls();
             }
         });
 
@@ -244,276 +366,196 @@
                    (window.innerWidth <= 768 && 'ontouchstart' in window);
         }
 
-        function updateMobileControls() {
+        function updateControlsDisplay() {
             const mobileControls = document.getElementById('mobileControls');
+            const controlsTable = document.getElementById('controlsTable');
+            
             if (isMobileDevice()) {
                 mobileControls.classList.add('active');
+                controlsTable.classList.add('hidden');
                 console.log('Mobile device detected, showing touch controls');
             } else {
                 mobileControls.classList.remove('active');
+                controlsTable.classList.remove('hidden');
+                console.log('Desktop device detected, showing controls table');
+            }
+        }
+
+        function initializeControls() {
+            // Update display based on device type
+            updateControlsDisplay();
+            
+            // Initialize mobile controls if on mobile device
+            if (isMobileDevice()) {
+                initMobileControls();
             }
         }
 
         function initMobileControls() {
-            // Show mobile controls if on mobile device
-            updateMobileControls();
-            
-            if (!isMobileDevice()) return;
-
             // Get the canvas element for key events
             let canvas = null;
             const findCanvas = () => {
                 canvas = document.querySelector('.dosbox-canvas');
                 if (!canvas) {
                     setTimeout(findCanvas, 100);
+                    return;
                 }
+                console.log('Canvas found, initializing mobile controls');
             };
             findCanvas();
 
-            // Movement state
-            let moveState = { forward: false, backward: false, left: false, right: false };
-            let currentKeys = new Set();
+            // Track active keys to prevent conflicts
+            let activeKeys = new Set();
 
             // Function to simulate key events
             function simulateKeyEvent(keyCode, type) {
                 if (!canvas) return;
                 
                 let eventKeyCode = 0;
+                let key = keyCode;
+                
+                // Map keys to their proper codes
                 switch(keyCode) {
                     case 'ArrowUp': eventKeyCode = 38; break;
                     case 'ArrowDown': eventKeyCode = 40; break;
                     case 'ArrowLeft': eventKeyCode = 37; break;
                     case 'ArrowRight': eventKeyCode = 39; break;
-                    case ' ': eventKeyCode = 32; break;
+                    case ' ': eventKeyCode = 32; key = ' '; break;
                     case 'Control': eventKeyCode = 17; break;
                     case 'Shift': eventKeyCode = 16; break;
+                    case 'Alt': eventKeyCode = 18; break;
                     case 'Tab': eventKeyCode = 9; break;
                     case 'Escape': eventKeyCode = 27; break;
                 }
                 
                 const event = new KeyboardEvent(type, {
-                    key: keyCode,
+                    key: key,
                     code: keyCode,
                     keyCode: eventKeyCode,
                     ctrlKey: keyCode === 'Control',
                     shiftKey: keyCode === 'Shift',
+                    altKey: keyCode === 'Alt',
                     bubbles: true,
                     cancelable: true
                 });
                 
                 canvas.dispatchEvent(event);
-                document.dispatchEvent(event);
+                console.log(`${type}: ${keyCode} (${eventKeyCode})`);
             }
 
-            function updateMovement(dx, dy) {
-                const threshold = 0.3;
-                const newMoveState = {
-                    forward: dy < -threshold,
-                    backward: dy > threshold,
-                    left: dx < -threshold,
-                    right: dx > threshold
-                };
-
-                // Handle forward/backward
-                if (newMoveState.forward !== moveState.forward) {
-                    if (newMoveState.forward) {
-                        simulateKeyEvent('ArrowUp', 'keydown');
-                        currentKeys.add('ArrowUp');
-                    } else {
-                        simulateKeyEvent('ArrowUp', 'keyup');
-                        currentKeys.delete('ArrowUp');
-                    }
-                }
-
-                if (newMoveState.backward !== moveState.backward) {
-                    if (newMoveState.backward) {
-                        simulateKeyEvent('ArrowDown', 'keydown');
-                        currentKeys.add('ArrowDown');
-                    } else {
-                        simulateKeyEvent('ArrowDown', 'keyup');
-                        currentKeys.delete('ArrowDown');
-                    }
-                }
-
-                // Handle left/right turning
-                if (newMoveState.left !== moveState.left) {
-                    if (newMoveState.left) {
-                        simulateKeyEvent('ArrowLeft', 'keydown');
-                        currentKeys.add('ArrowLeft');
-                    } else {
-                        simulateKeyEvent('ArrowLeft', 'keyup');
-                        currentKeys.delete('ArrowLeft');
-                    }
-                }
-
-                if (newMoveState.right !== moveState.right) {
-                    if (newMoveState.right) {
-                        simulateKeyEvent('ArrowRight', 'keydown');
-                        currentKeys.add('ArrowRight');
-                    } else {
-                        simulateKeyEvent('ArrowRight', 'keyup');
-                        currentKeys.delete('ArrowRight');
-                    }
-                }
-
-                moveState = newMoveState;
-            }
-
-            function stopAllMovement() {
-                currentKeys.forEach(key => {
-                    simulateKeyEvent(key, 'keyup');
-                });
-                currentKeys.clear();
-                moveState = { forward: false, backward: false, left: false, right: false };
-            }
-
-            // Virtual Joystick Implementation
-            const joystick = document.getElementById('virtualJoystick');
-            const knob = document.getElementById('joystickKnob');
-            let joystickActive = false;
-            let joystickCenter = { x: 0, y: 0 };
-            let joystickRadius = 0;
-
-            function initJoystick() {
-                const rect = joystick.getBoundingClientRect();
-                joystickCenter = {
-                    x: rect.left + rect.width / 2,
-                    y: rect.top + rect.height / 2
-                };
-                joystickRadius = rect.width / 2 - 20; // Account for knob size
-            }
-
-            function updateJoystick(touch) {
-                if (!joystickActive) return;
-
-                const dx = touch.clientX - joystickCenter.x;
-                const dy = touch.clientY - joystickCenter.y;
-                const distance = Math.min(Math.sqrt(dx * dx + dy * dy), joystickRadius);
-                const angle = Math.atan2(dy, dx);
-
-                const knobX = Math.cos(angle) * distance;
-                const knobY = Math.sin(angle) * distance;
-
-                knob.style.transform = `translate(calc(-50% + ${knobX}px), calc(-50% + ${knobY}px))`;
-
-                // Normalize to -1 to 1 range
-                const normalizedX = knobX / joystickRadius;
-                const normalizedY = knobY / joystickRadius;
-
-                updateMovement(normalizedX, normalizedY);
-            }
-
-            function resetJoystick() {
-                knob.style.transform = 'translate(-50%, -50%)';
-                joystickActive = false;
-                stopAllMovement();
-            }
-
-            // Joystick event handlers
-            joystick.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                joystickActive = true;
-                initJoystick();
-                updateJoystick(e.touches[0]);
-            });
-
-            document.addEventListener('touchmove', (e) => {
-                if (joystickActive) {
-                    e.preventDefault();
-                    updateJoystick(e.touches[0]);
-                }
-            });
-
-            document.addEventListener('touchend', (e) => {
-                if (joystickActive) {
-                    e.preventDefault();
-                    resetJoystick();
-                }
-            });
-
-            // Aim Area Implementation
-            const aimArea = document.getElementById('aimArea');
-            let aimActive = false;
-            let lastAimPos = { x: 0, y: 0 };
-
-            aimArea.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                aimActive = true;
-                lastAimPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            });
-
-            aimArea.addEventListener('touchmove', (e) => {
-                if (!aimActive) return;
-                e.preventDefault();
-
-                const touch = e.touches[0];
-                const deltaX = touch.clientX - lastAimPos.x;
-                const deltaY = touch.clientY - lastAimPos.y;
-
-                // Simulate mouse movement for aiming
-                const sensitivity = 2;
-                if (Math.abs(deltaX) > 2) {
-                    const direction = deltaX > 0 ? 'ArrowRight' : 'ArrowLeft';
-                    for (let i = 0; i < Math.abs(deltaX * sensitivity); i++) {
-                        simulateKeyEvent(direction, 'keydown');
-                        setTimeout(() => simulateKeyEvent(direction, 'keyup'), 10);
-                    }
-                }
-
-                lastAimPos = { x: touch.clientX, y: touch.clientY };
-            });
-
-            aimArea.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                aimActive = false;
-            });
-
-            // Button event handlers
-            const touchButtons = document.querySelectorAll('.touch-button');
-            touchButtons.forEach(button => {
+            // Handle all touch buttons (D-Pad, Action buttons, Utility buttons)
+            const allButtons = document.querySelectorAll('[data-key]');
+            
+            allButtons.forEach(button => {
                 const keyCode = button.getAttribute('data-key');
                 
+                // Touch start - key down
                 button.addEventListener('touchstart', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    button.classList.add('active');
-                    if (keyCode) {
+                    
+                    if (!activeKeys.has(keyCode)) {
+                        activeKeys.add(keyCode);
+                        button.classList.add('active');
                         simulateKeyEvent(keyCode, 'keydown');
                     }
                 });
 
+                // Touch end - key up
                 button.addEventListener('touchend', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    button.classList.remove('active');
-                    if (keyCode) {
+                    
+                    if (activeKeys.has(keyCode)) {
+                        activeKeys.delete(keyCode);
+                        button.classList.remove('active');
                         simulateKeyEvent(keyCode, 'keyup');
                     }
                 });
 
+                // Touch cancel - key up (in case touch is interrupted)
                 button.addEventListener('touchcancel', (e) => {
                     e.preventDefault();
-                    button.classList.remove('active');
-                    if (keyCode) {
+                    
+                    if (activeKeys.has(keyCode)) {
+                        activeKeys.delete(keyCode);
+                        button.classList.remove('active');
                         simulateKeyEvent(keyCode, 'keyup');
                     }
                 });
 
+                // Prevent context menu
                 button.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                 });
+
+                // Mouse events for testing on desktop
+                button.addEventListener('mousedown', (e) => {
+                    if (!isMobileDevice()) {
+                        e.preventDefault();
+                        if (!activeKeys.has(keyCode)) {
+                            activeKeys.add(keyCode);
+                            button.classList.add('active');
+                            simulateKeyEvent(keyCode, 'keydown');
+                        }
+                    }
+                });
+
+                button.addEventListener('mouseup', (e) => {
+                    if (!isMobileDevice()) {
+                        e.preventDefault();
+                        if (activeKeys.has(keyCode)) {
+                            activeKeys.delete(keyCode);
+                            button.classList.remove('active');
+                            simulateKeyEvent(keyCode, 'keyup');
+                        }
+                    }
+                });
+
+                button.addEventListener('mouseleave', (e) => {
+                    if (!isMobileDevice()) {
+                        if (activeKeys.has(keyCode)) {
+                            activeKeys.delete(keyCode);
+                            button.classList.remove('active');
+                            simulateKeyEvent(keyCode, 'keyup');
+                        }
+                    }
+                });
+            });
+
+            // Cleanup function to release all keys if something goes wrong
+            function releaseAllKeys() {
+                activeKeys.forEach(keyCode => {
+                    simulateKeyEvent(keyCode, 'keyup');
+                });
+                activeKeys.clear();
+                
+                allButtons.forEach(button => {
+                    button.classList.remove('active');
+                });
+            }
+
+            // Release all keys if the page loses focus
+            window.addEventListener('blur', releaseAllKeys);
+            window.addEventListener('pagehide', releaseAllKeys);
+            
+            // Handle visibility change (when switching tabs)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    releaseAllKeys();
+                }
             });
         }
 
         // Check for mobile on window resize
         window.addEventListener('resize', () => {
-            updateMobileControls();
+            setTimeout(updateControlsDisplay, 100);
         });
 
         // Wait for page to be ready
         window.addEventListener('load', function() {
-            // Initial mobile controls check
-            updateMobileControls();
+            // Initial controls display
+            updateControlsDisplay();
         });
     </script>
 </body>
