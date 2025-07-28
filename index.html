@@ -249,7 +249,35 @@
             transform: scale(0.95);
         }
 
+        /* Fullscreen Button */
+        .fullscreen-button {
+            background: rgba(255, 165, 0, 0.8);
+            border: 2px solid rgba(255, 165, 0, 1);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+            margin: 10px auto;
+            display: block;
+            width: fit-content;
+        }
 
+        .fullscreen-button:hover {
+            background: rgba(255, 165, 0, 1);
+            transform: scale(1.05);
+        }
+
+        .fullscreen-button:active {
+            transform: scale(0.95);
+        }
+
+        .fullscreen-button.hidden {
+            display: none;
+        }
 
         @media (max-width: 768px) {
             .dosbox-container,
@@ -298,6 +326,8 @@
 <body>
     <div class="container">
         <div id="dosbox"></div>
+        <!-- Fullscreen Button (Desktop Only) -->
+        <button class="fullscreen-button" id="fullscreenBtn">🔳 FULLSCREEN</button>
     </div>
 
     <!-- Desktop Controls Table -->
@@ -406,15 +436,18 @@
         function updateControlsDisplay() {
             const mobileControls = document.getElementById('mobileControls');
             const controlsTable = document.getElementById('controlsTable');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
             
             if (isMobileDevice()) {
                 mobileControls.classList.add('active');
                 controlsTable.classList.add('hidden');
+                fullscreenBtn.classList.add('hidden');
                 console.log('Mobile device detected, showing touch controls');
             } else {
                 mobileControls.classList.remove('active');
                 controlsTable.classList.remove('hidden');
-                console.log('Desktop device detected, showing controls table');
+                fullscreenBtn.classList.remove('hidden');
+                console.log('Desktop device detected, showing controls table and fullscreen button');
             }
         }
 
@@ -429,6 +462,57 @@
             if (isMobileDevice()) {
                 initMobileControls();
             }
+            
+            // Initialize fullscreen button for desktop devices
+            if (!isMobileDevice()) {
+                initFullscreenButton();
+            }
+        }
+
+        // Initialize fullscreen button functionality
+        function initFullscreenButton() {
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            
+            fullscreenBtn.addEventListener('click', () => {
+                // Try to request fullscreen using the JS-DOS API first
+                if (dosbox && dosbox.requestFullScreen) {
+                    dosbox.requestFullScreen();
+                } else {
+                    // Fallback to standard fullscreen API
+                    const container = document.getElementById('dosbox');
+                    if (container) {
+                        if (container.requestFullscreen) {
+                            container.requestFullscreen();
+                        } else if (container.mozRequestFullScreen) {
+                            container.mozRequestFullScreen();
+                        } else if (container.webkitRequestFullscreen) {
+                            container.webkitRequestFullscreen();
+                        } else if (container.msRequestFullscreen) {
+                            container.msRequestFullscreen();
+                        }
+                    }
+                }
+            });
+
+            // Update button text based on fullscreen state
+            function updateFullscreenButton() {
+                const isFullscreen = document.fullscreenElement || 
+                                   document.mozFullScreenElement || 
+                                   document.webkitFullscreenElement || 
+                                   document.msFullscreenElement;
+                
+                if (isFullscreen) {
+                    fullscreenBtn.textContent = '🗗 EXIT FULLSCREEN';
+                } else {
+                    fullscreenBtn.textContent = '🔳 FULLSCREEN';
+                }
+            }
+
+            // Listen for fullscreen changes
+            document.addEventListener('fullscreenchange', updateFullscreenButton);
+            document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+            document.addEventListener('MSFullscreenChange', updateFullscreenButton);
         }
 
         // Setup canvas observer to fix responsive issues after JS-DOS loads
