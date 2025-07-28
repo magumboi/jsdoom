@@ -256,13 +256,16 @@
                 width: 100% !important;
                 height: 50vh !important;
                 margin: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
             }
             
             .dosbox-canvas {
-                width: 100% !important;
-                height: 100% !important;
                 max-width: 100% !important;
                 max-height: 100% !important;
+                width: auto !important;
+                height: auto !important;
                 object-fit: contain !important;
             }
         }
@@ -273,12 +276,16 @@
             max-width: 800px !important;
             margin: 0 auto !important;
             overflow: hidden !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
         .dosbox-canvas {
-            width: 100% !important;
-            height: auto !important;
             max-width: 100% !important;
+            max-height: 100% !important;
+            width: auto !important;
+            height: auto !important;
             display: block !important;
             object-fit: contain !important;
         }
@@ -465,19 +472,16 @@
         function enforceCanvasConstraints(canvas) {
             if (!canvas) return;
             
-            // Remove any inline width/height that might break responsiveness
-            canvas.style.width = '';
-            canvas.style.height = '';
+            // Allow the canvas to maintain its original dimensions but constrain it within container
             canvas.style.maxWidth = '100%';
             canvas.style.maxHeight = '100%';
             canvas.style.objectFit = 'contain';
             canvas.style.display = 'block';
             
-            // Remove width/height attributes that can cause overflow
-            canvas.removeAttribute('width');
-            canvas.removeAttribute('height');
+            // Don't remove width/height attributes - let the canvas keep its native resolution
+            // Just ensure it scales properly within its container
             
-            console.log('Canvas constraints enforced');
+            console.log('Canvas constraints enforced - allowing native scaling');
         }
 
         function initMobileControls() {
