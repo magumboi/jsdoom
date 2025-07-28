@@ -209,38 +209,25 @@
             }
         }
 
-        /* Mobile landscape orientation */
-        @media screen and (orientation: portrait) and (max-width: 768px) {
-            body {
-                transform: rotate(90deg);
-                transform-origin: center center;
-                width: 100vh;
-                height: 100vw;
-                overflow: hidden;
-                position: absolute;
-                top: 0;
-                left: 0;
-            }
-        }
-
-        /* Fullscreen dosbox canvas styles */
-        .dosbox-canvas:fullscreen,
-        .dosbox-canvas:-webkit-full-screen,
-        .dosbox-canvas:-moz-full-screen,
-        .dosbox-canvas:-ms-fullscreen {
+        /* Fullscreen styles for any element */
+        :fullscreen,
+        :-webkit-full-screen,
+        :-moz-full-screen,
+        :-ms-fullscreen {
             width: 100vw !important;
             height: 100vh !important;
-            background: #000;
+            background: #000 !important;
             object-fit: contain;
         }
 
-        /* Mobile fullscreen orientation handling */
-        @media screen and (orientation: portrait) {
-            .dosbox-canvas:fullscreen,
-            .dosbox-canvas:-webkit-full-screen,
-            .dosbox-canvas:-moz-full-screen,
-            .dosbox-canvas:-ms-fullscreen {
-                transform: rotate(90deg);
+        /* Mobile landscape orientation - ONLY in fullscreen and portrait mode */
+        @media screen and (orientation: portrait) and (max-width: 768px) {
+            :fullscreen,
+            :-webkit-full-screen,
+            :-moz-full-screen,
+            :-ms-fullscreen {
+                transform: rotate(90deg) !important;
+                transform-origin: center center !important;
                 width: 100vh !important;
                 height: 100vw !important;
             }
@@ -305,47 +292,52 @@
         }
 
         function enterFullscreen() {
-            // First try to find the canvas
-            let dosboxCanvas = document.querySelector('.dosbox-canvas');
+            // Try multiple approaches to find the game container
+            let targetElement = document.querySelector('.dosbox-canvas') || 
+                               document.querySelector('#dosbox') || 
+                               document.querySelector('.dosbox-container') ||
+                               document.documentElement;
             
-            // If canvas not found, wait for it to be created
-            if (!dosboxCanvas) {
-                console.log('Dosbox canvas not found, waiting...');
-                setTimeout(() => {
-                    dosboxCanvas = document.querySelector('.dosbox-canvas');
-                    if (dosboxCanvas) {
-                        requestFullscreenForElement(dosboxCanvas);
-                    } else {
-                        console.log('Dosbox canvas still not found after waiting');
-                    }
-                }, 1000);
-                return;
-            }
-            
-            requestFullscreenForElement(dosboxCanvas);
+            console.log('Attempting fullscreen on:', targetElement);
+            requestFullscreenForElement(targetElement);
         }
 
         function requestFullscreenForElement(element) {
+            console.log('Requesting fullscreen for element:', element);
+            
             // For mobile devices, request screen orientation to landscape
             if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape').catch(err => {
-                    console.log('Could not lock orientation:', err);
+                screen.orientation.lock('landscape-primary').catch(err => {
+                    console.log('Could not lock orientation to landscape-primary, trying landscape:', err);
+                    screen.orientation.lock('landscape').catch(err2 => {
+                        console.log('Could not lock orientation to landscape:', err2);
+                    });
                 });
             }
 
             // Request fullscreen with various browser prefixes
-            if (element.requestFullscreen) {
-                element.requestFullscreen();
-            } else if (element.webkitRequestFullscreen) {
-                element.webkitRequestFullscreen();
-            } else if (element.webkitRequestFullScreen) {
-                element.webkitRequestFullScreen();
-            } else if (element.mozRequestFullScreen) {
-                element.mozRequestFullScreen();
-            } else if (element.msRequestFullscreen) {
-                element.msRequestFullscreen();
+            const requestFullscreen = element.requestFullscreen ||
+                                    element.webkitRequestFullscreen ||
+                                    element.webkitRequestFullScreen ||
+                                    element.mozRequestFullScreen ||
+                                    element.msRequestFullscreen;
+
+            if (requestFullscreen) {
+                requestFullscreen.call(element).then(() => {
+                    console.log('Fullscreen request successful');
+                }).catch(err => {
+                    console.log('Fullscreen request failed:', err);
+                });
             } else {
                 console.log('Fullscreen API not supported');
+                // Fallback: try to simulate fullscreen with CSS
+                element.style.position = 'fixed';
+                element.style.top = '0';
+                element.style.left = '0';
+                element.style.width = '100vw';
+                element.style.height = '100vh';
+                element.style.zIndex = '9999';
+                element.style.background = '#000';
             }
         }
 
