@@ -257,6 +257,30 @@
                 height: 50vh !important;
                 margin: 0 !important;
             }
+            
+            .dosbox-canvas {
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100% !important;
+                max-height: 100% !important;
+                object-fit: contain !important;
+            }
+        }
+
+        /* Desktop canvas constraints */
+        .dosbox-container {
+            width: 100% !important;
+            max-width: 800px !important;
+            margin: 0 auto !important;
+            overflow: hidden !important;
+        }
+
+        .dosbox-canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 100% !important;
+            display: block !important;
+            object-fit: contain !important;
         }
 
 
@@ -317,6 +341,10 @@
                     <span>Map:</span>
                     <span class="key">Tab</span>
                 </div>
+                <div class="control-item">
+                    <span>Start/Enter:</span>
+                    <span class="key">Enter</span>
+                </div>
             </div>
         </div>
     </div>
@@ -343,6 +371,7 @@
         <div class="utility-buttons">
             <div class="utility-button" data-key="Escape">MENU</div>
             <div class="utility-button" data-key="Tab">MAP</div>
+            <div class="utility-button" data-key="Enter">START</div>
         </div>
     </div>
 
@@ -385,10 +414,70 @@
             // Update display based on device type
             updateControlsDisplay();
             
+            // Monitor and fix canvas responsive issues
+            setupCanvasObserver();
+            
             // Initialize mobile controls if on mobile device
             if (isMobileDevice()) {
                 initMobileControls();
             }
+        }
+
+        // Setup canvas observer to fix responsive issues after JS-DOS loads
+        function setupCanvasObserver() {
+            // Monitor for canvas creation and changes
+            const checkCanvas = () => {
+                const canvas = document.querySelector('.dosbox-canvas');
+                if (canvas) {
+                    console.log('Canvas found, applying responsive constraints');
+                    enforceCanvasConstraints(canvas);
+                    
+                    // Watch for attribute changes (size changes from JS-DOS)
+                    if (window.MutationObserver) {
+                        const observer = new MutationObserver(() => {
+                            enforceCanvasConstraints(canvas);
+                        });
+                        
+                        observer.observe(canvas, {
+                            attributes: true,
+                            attributeFilter: ['width', 'height', 'style']
+                        });
+                    }
+                    
+                    return true;
+                }
+                return false;
+            };
+
+            // Check periodically until canvas is found
+            const intervalId = setInterval(() => {
+                if (checkCanvas()) {
+                    clearInterval(intervalId);
+                }
+            }, 100);
+
+            // Stop checking after 30 seconds
+            setTimeout(() => {
+                clearInterval(intervalId);
+            }, 30000);
+        }
+
+        function enforceCanvasConstraints(canvas) {
+            if (!canvas) return;
+            
+            // Remove any inline width/height that might break responsiveness
+            canvas.style.width = '';
+            canvas.style.height = '';
+            canvas.style.maxWidth = '100%';
+            canvas.style.maxHeight = '100%';
+            canvas.style.objectFit = 'contain';
+            canvas.style.display = 'block';
+            
+            // Remove width/height attributes that can cause overflow
+            canvas.removeAttribute('width');
+            canvas.removeAttribute('height');
+            
+            console.log('Canvas constraints enforced');
         }
 
         function initMobileControls() {
@@ -426,6 +515,7 @@
                     case 'Alt': eventKeyCode = 18; break;
                     case 'Tab': eventKeyCode = 9; break;
                     case 'Escape': eventKeyCode = 27; break;
+                    case 'Enter': eventKeyCode = 13; break;
                 }
                 
                 const event = new KeyboardEvent(type, {
@@ -547,9 +637,15 @@
             });
         }
 
-        // Check for mobile on window resize
+        // Check for mobile on window resize and fix canvas
         window.addEventListener('resize', () => {
-            setTimeout(updateControlsDisplay, 100);
+            setTimeout(() => {
+                updateControlsDisplay();
+                const canvas = document.querySelector('.dosbox-canvas');
+                if (canvas) {
+                    enforceCanvasConstraints(canvas);
+                }
+            }, 100);
         });
 
         // Wait for page to be ready
