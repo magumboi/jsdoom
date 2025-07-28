@@ -192,26 +192,14 @@
             }
         }
 
-        /* Fullscreen dosbox container styles */
-        .dosbox-container:fullscreen,
-        .dosbox-container:-webkit-full-screen,
-        .dosbox-container:-moz-full-screen,
-        .dosbox-container:-ms-fullscreen {
+        /* Fullscreen dosbox canvas styles */
+        .dosbox-canvas:fullscreen,
+        .dosbox-canvas:-webkit-full-screen,
+        .dosbox-canvas:-moz-full-screen,
+        .dosbox-canvas:-ms-fullscreen {
             width: 100vw !important;
             height: 100vh !important;
-            margin: 0 !important;
             background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .dosbox-container:fullscreen .dosbox-canvas,
-        .dosbox-container:-webkit-full-screen .dosbox-canvas,
-        .dosbox-container:-moz-full-screen .dosbox-canvas,
-        .dosbox-container:-ms-fullscreen .dosbox-canvas {
-            width: 100% !important;
-            height: 100% !important;
             object-fit: contain;
         }
     </style>
@@ -271,13 +259,13 @@
         }
 
         function enterFullscreen() {
-            const dosboxContainer = document.querySelector('.dosbox-container');
-            if (!dosboxContainer) {
-                console.log('Dosbox container not found');
+            const dosboxCanvas = document.querySelector('.dosbox-canvas');
+            if (!dosboxCanvas) {
+                console.log('Dosbox canvas not found');
                 return;
             }
 
-            const element = dosboxContainer;
+            const element = dosboxCanvas;
             if (element.requestFullscreen) {
                 element.requestFullscreen();
             } else if (element.webkitRequestFullscreen) {
