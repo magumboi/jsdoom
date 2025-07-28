@@ -25,6 +25,69 @@
             display: block;
         }
 
+        /* Virtual Joystick - Left Side */
+        .virtual-joystick {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            pointer-events: auto;
+            touch-action: none;
+        }
+
+        .joystick-knob {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(255, 255, 255, 1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+            pointer-events: none;
+        }
+
+        /* Aim Area - Right Side */
+        .aim-area {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 70%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            pointer-events: auto;
+            touch-action: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .aim-area::before {
+            content: "AIM AREA\nDrag to look around";
+            text-align: center;
+            white-space: pre-line;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 120px;
+            pointer-events: none;
+        }
+
         .touch-button {
             position: absolute;
             background: rgba(255, 255, 255, 0.2);
@@ -32,7 +95,7 @@
             border-radius: 8px;
             color: white;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -44,92 +107,81 @@
         .touch-button:active {
             background: rgba(255, 255, 255, 0.4);
             border-color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* D-Pad - Left Side */
-        .dpad {
-            bottom: 60px;
-            left: 30px;
-            width: 140px;
-            height: 140px;
-        }
-
-        .dpad-up {
-            top: 0;
-            left: 50px;
-            width: 40px;
-            height: 40px;
-        }
-
-        .dpad-down {
-            bottom: 0;
-            left: 50px;
-            width: 40px;
-            height: 40px;
-        }
-
-        .dpad-left {
-            left: 0;
-            top: 50px;
-            width: 40px;
-            height: 40px;
-        }
-
-        .dpad-right {
-            right: 0;
-            top: 50px;
-            width: 40px;
-            height: 40px;
-        }
-
-        /* Action Buttons - Right Side */
-        .action-buttons {
-            bottom: 60px;
-            right: 30px;
-            width: 140px;
-            height: 140px;
+            transform: scale(0.95);
         }
 
         .btn-fire {
-            bottom: 50px;
+            bottom: 60px;
             right: 0;
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 0, 0, 0.3);
-            border-color: rgba(255, 0, 0, 0.5);
-            font-size: 14px;
+            width: 70px;
+            height: 50px;
+            background: rgba(255, 50, 50, 0.4);
+            border-color: rgba(255, 50, 50, 0.6);
+            font-size: 16px;
+            font-weight: bold;
         }
 
         .btn-fire:active {
-            background: rgba(255, 0, 0, 0.5);
+            background: rgba(255, 50, 50, 0.7);
         }
 
         .btn-action {
-            bottom: 50px;
+            bottom: 60px;
             right: 80px;
-            width: 60px;
-            height: 60px;
-            background: rgba(0, 255, 0, 0.3);
-            border-color: rgba(0, 255, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            background: rgba(50, 255, 50, 0.4);
+            border-color: rgba(50, 255, 50, 0.6);
             font-size: 12px;
         }
 
         .btn-action:active {
-            background: rgba(0, 255, 0, 0.5);
+            background: rgba(50, 255, 50, 0.7);
         }
 
-        .btn-start {
-            bottom: 0;
+        .btn-run {
+            bottom: 10px;
             right: 40px;
-            width: 60px;
+            width: 50px;
             height: 40px;
-            background: rgba(255, 255, 0, 0.3);
-            border-color: rgba(255, 255, 0, 0.5);
+            background: rgba(50, 50, 255, 0.4);
+            border-color: rgba(50, 50, 255, 0.6);
             font-size: 12px;
         }
 
-        .btn-start:active {
-            background: rgba(255, 255, 0, 0.5);
+        .btn-run:active {
+            background: rgba(50, 50, 255, 0.7);
+        }
+
+        .btn-weapon {
+            bottom: 10px;
+            right: 100px;
+            width: 60px;
+            height: 40px;
+            background: rgba(255, 255, 50, 0.4);
+            border-color: rgba(255, 255, 50, 0.6);
+            font-size: 11px;
+        }
+
+        .btn-weapon:active {
+            background: rgba(255, 255, 50, 0.7);
+        }
+
+        /* Menu Button */
+        .btn-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 40px;
+            background: rgba(128, 128, 128, 0.4);
+            border-color: rgba(128, 128, 128, 0.6);
+            font-size: 12px;
+            pointer-events: auto;
+        }
+
+        .btn-menu:active {
+            background: rgba(128, 128, 128, 0.7);
         }
 
         @media (max-width: 768px) {
@@ -152,20 +204,24 @@
 
     <!-- Mobile Touch Controls -->
     <div class="mobile-controls" id="mobileControls">
-        <!-- D-Pad - Left Side -->
-        <div class="dpad">
-            <div class="touch-button dpad-up" data-key="ArrowUp">↑</div>
-            <div class="touch-button dpad-down" data-key="ArrowDown">↓</div>
-            <div class="touch-button dpad-left" data-key="ArrowLeft">←</div>
-            <div class="touch-button dpad-right" data-key="ArrowRight">→</div>
+        <!-- Virtual Joystick - Left Side -->
+        <div class="virtual-joystick" id="virtualJoystick">
+            <div class="joystick-knob" id="joystickKnob"></div>
         </div>
 
-        <!-- Action Buttons - Right Side -->
+        <!-- Aim Area - Right Side -->
+        <div class="aim-area" id="aimArea"></div>
+
+        <!-- Action Buttons -->
         <div class="action-buttons">
-            <div class="touch-button btn-action" data-key=" ">ACTION</div>
             <div class="touch-button btn-fire" data-key="Control">FIRE</div>
-            <div class="touch-button btn-start" data-key="Enter">START</div>
+            <div class="touch-button btn-action" data-key=" ">USE</div>
+            <div class="touch-button btn-run" data-key="Shift">RUN</div>
+            <div class="touch-button btn-weapon" data-key="Tab">WEAPON</div>
         </div>
+
+        <!-- Menu Button -->
+        <div class="touch-button btn-menu" data-key="Escape">MENU</div>
     </div>
 
     <script type="text/javascript" src="./script.js"></script>
@@ -233,6 +289,10 @@
             };
             findCanvas();
 
+            // Movement state
+            let moveState = { forward: false, backward: false, left: false, right: false };
+            let currentKeys = new Set();
+
             // Function to simulate key events
             function simulateKeyEvent(keyCode, type) {
                 if (!canvas) return;
@@ -245,13 +305,17 @@
                     case 'ArrowRight': eventKeyCode = 39; break;
                     case ' ': eventKeyCode = 32; break;
                     case 'Control': eventKeyCode = 17; break;
-                    case 'Enter': eventKeyCode = 13; break;
+                    case 'Shift': eventKeyCode = 16; break;
+                    case 'Tab': eventKeyCode = 9; break;
+                    case 'Escape': eventKeyCode = 27; break;
                 }
                 
                 const event = new KeyboardEvent(type, {
                     key: keyCode,
                     code: keyCode,
                     keyCode: eventKeyCode,
+                    ctrlKey: keyCode === 'Control',
+                    shiftKey: keyCode === 'Shift',
                     bubbles: true,
                     cancelable: true
                 });
@@ -260,33 +324,194 @@
                 document.dispatchEvent(event);
             }
 
-            // Add touch event listeners to all touch buttons
+            function updateMovement(dx, dy) {
+                const threshold = 0.3;
+                const newMoveState = {
+                    forward: dy < -threshold,
+                    backward: dy > threshold,
+                    left: dx < -threshold,
+                    right: dx > threshold
+                };
+
+                // Handle forward/backward
+                if (newMoveState.forward !== moveState.forward) {
+                    if (newMoveState.forward) {
+                        simulateKeyEvent('ArrowUp', 'keydown');
+                        currentKeys.add('ArrowUp');
+                    } else {
+                        simulateKeyEvent('ArrowUp', 'keyup');
+                        currentKeys.delete('ArrowUp');
+                    }
+                }
+
+                if (newMoveState.backward !== moveState.backward) {
+                    if (newMoveState.backward) {
+                        simulateKeyEvent('ArrowDown', 'keydown');
+                        currentKeys.add('ArrowDown');
+                    } else {
+                        simulateKeyEvent('ArrowDown', 'keyup');
+                        currentKeys.delete('ArrowDown');
+                    }
+                }
+
+                // Handle left/right turning
+                if (newMoveState.left !== moveState.left) {
+                    if (newMoveState.left) {
+                        simulateKeyEvent('ArrowLeft', 'keydown');
+                        currentKeys.add('ArrowLeft');
+                    } else {
+                        simulateKeyEvent('ArrowLeft', 'keyup');
+                        currentKeys.delete('ArrowLeft');
+                    }
+                }
+
+                if (newMoveState.right !== moveState.right) {
+                    if (newMoveState.right) {
+                        simulateKeyEvent('ArrowRight', 'keydown');
+                        currentKeys.add('ArrowRight');
+                    } else {
+                        simulateKeyEvent('ArrowRight', 'keyup');
+                        currentKeys.delete('ArrowRight');
+                    }
+                }
+
+                moveState = newMoveState;
+            }
+
+            function stopAllMovement() {
+                currentKeys.forEach(key => {
+                    simulateKeyEvent(key, 'keyup');
+                });
+                currentKeys.clear();
+                moveState = { forward: false, backward: false, left: false, right: false };
+            }
+
+            // Virtual Joystick Implementation
+            const joystick = document.getElementById('virtualJoystick');
+            const knob = document.getElementById('joystickKnob');
+            let joystickActive = false;
+            let joystickCenter = { x: 0, y: 0 };
+            let joystickRadius = 0;
+
+            function initJoystick() {
+                const rect = joystick.getBoundingClientRect();
+                joystickCenter = {
+                    x: rect.left + rect.width / 2,
+                    y: rect.top + rect.height / 2
+                };
+                joystickRadius = rect.width / 2 - 20; // Account for knob size
+            }
+
+            function updateJoystick(touch) {
+                if (!joystickActive) return;
+
+                const dx = touch.clientX - joystickCenter.x;
+                const dy = touch.clientY - joystickCenter.y;
+                const distance = Math.min(Math.sqrt(dx * dx + dy * dy), joystickRadius);
+                const angle = Math.atan2(dy, dx);
+
+                const knobX = Math.cos(angle) * distance;
+                const knobY = Math.sin(angle) * distance;
+
+                knob.style.transform = `translate(calc(-50% + ${knobX}px), calc(-50% + ${knobY}px))`;
+
+                // Normalize to -1 to 1 range
+                const normalizedX = knobX / joystickRadius;
+                const normalizedY = knobY / joystickRadius;
+
+                updateMovement(normalizedX, normalizedY);
+            }
+
+            function resetJoystick() {
+                knob.style.transform = 'translate(-50%, -50%)';
+                joystickActive = false;
+                stopAllMovement();
+            }
+
+            // Joystick event handlers
+            joystick.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                joystickActive = true;
+                initJoystick();
+                updateJoystick(e.touches[0]);
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (joystickActive) {
+                    e.preventDefault();
+                    updateJoystick(e.touches[0]);
+                }
+            });
+
+            document.addEventListener('touchend', (e) => {
+                if (joystickActive) {
+                    e.preventDefault();
+                    resetJoystick();
+                }
+            });
+
+            // Aim Area Implementation
+            const aimArea = document.getElementById('aimArea');
+            let aimActive = false;
+            let lastAimPos = { x: 0, y: 0 };
+
+            aimArea.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                aimActive = true;
+                lastAimPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            });
+
+            aimArea.addEventListener('touchmove', (e) => {
+                if (!aimActive) return;
+                e.preventDefault();
+
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - lastAimPos.x;
+                const deltaY = touch.clientY - lastAimPos.y;
+
+                // Simulate mouse movement for aiming
+                const sensitivity = 2;
+                if (Math.abs(deltaX) > 2) {
+                    const direction = deltaX > 0 ? 'ArrowRight' : 'ArrowLeft';
+                    for (let i = 0; i < Math.abs(deltaX * sensitivity); i++) {
+                        simulateKeyEvent(direction, 'keydown');
+                        setTimeout(() => simulateKeyEvent(direction, 'keyup'), 10);
+                    }
+                }
+
+                lastAimPos = { x: touch.clientX, y: touch.clientY };
+            });
+
+            aimArea.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                aimActive = false;
+            });
+
+            // Button event handlers
             const touchButtons = document.querySelectorAll('.touch-button');
             touchButtons.forEach(button => {
                 const keyCode = button.getAttribute('data-key');
                 
-                // Handle touch start
                 button.addEventListener('touchstart', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     button.classList.add('active');
                     simulateKeyEvent(keyCode, 'keydown');
                 });
 
-                // Handle touch end
                 button.addEventListener('touchend', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     button.classList.remove('active');
                     simulateKeyEvent(keyCode, 'keyup');
                 });
 
-                // Handle touch cancel
                 button.addEventListener('touchcancel', (e) => {
                     e.preventDefault();
                     button.classList.remove('active');
                     simulateKeyEvent(keyCode, 'keyup');
                 });
 
-                // Prevent context menu
                 button.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                 });
