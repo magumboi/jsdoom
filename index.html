@@ -184,11 +184,42 @@
             background: rgba(128, 128, 128, 0.7);
         }
 
+        /* Exit Fullscreen Button */
+        .btn-exit-fullscreen {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 40px;
+            background: rgba(255, 100, 100, 0.4);
+            border-color: rgba(255, 100, 100, 0.6);
+            font-size: 11px;
+            pointer-events: auto;
+        }
+
+        .btn-exit-fullscreen:active {
+            background: rgba(255, 100, 100, 0.7);
+        }
+
         @media (max-width: 768px) {
             .dosbox-container {
                 width: 100vw;
                 height: 60vh;
                 margin: 5% auto 0 auto;
+            }
+        }
+
+        /* Mobile landscape orientation */
+        @media screen and (orientation: portrait) and (max-width: 768px) {
+            body {
+                transform: rotate(90deg);
+                transform-origin: center center;
+                width: 100vh;
+                height: 100vw;
+                overflow: hidden;
+                position: absolute;
+                top: 0;
+                left: 0;
             }
         }
 
@@ -201,6 +232,18 @@
             height: 100vh !important;
             background: #000;
             object-fit: contain;
+        }
+
+        /* Mobile fullscreen orientation handling */
+        @media screen and (orientation: portrait) {
+            .dosbox-canvas:fullscreen,
+            .dosbox-canvas:-webkit-full-screen,
+            .dosbox-canvas:-moz-full-screen,
+            .dosbox-canvas:-ms-fullscreen {
+                transform: rotate(90deg);
+                width: 100vh !important;
+                height: 100vw !important;
+            }
         }
     </style>
 </head>
@@ -233,6 +276,9 @@
 
         <!-- Menu Button -->
         <div class="touch-button btn-menu" data-key="Escape">MENU</div>
+        
+        <!-- Exit Fullscreen Button -->
+        <div class="touch-button btn-exit-fullscreen" id="exitFullscreenBtn">EXIT FS</div>
     </div>
 
     <script type="text/javascript" src="./script.js"></script>
@@ -259,21 +305,63 @@
         }
 
         function enterFullscreen() {
-            const dosboxCanvas = document.querySelector('.dosbox-canvas');
+            // First try to find the canvas
+            let dosboxCanvas = document.querySelector('.dosbox-canvas');
+            
+            // If canvas not found, wait for it to be created
             if (!dosboxCanvas) {
-                console.log('Dosbox canvas not found');
+                console.log('Dosbox canvas not found, waiting...');
+                setTimeout(() => {
+                    dosboxCanvas = document.querySelector('.dosbox-canvas');
+                    if (dosboxCanvas) {
+                        requestFullscreenForElement(dosboxCanvas);
+                    } else {
+                        console.log('Dosbox canvas still not found after waiting');
+                    }
+                }, 1000);
                 return;
             }
+            
+            requestFullscreenForElement(dosboxCanvas);
+        }
 
-            const element = dosboxCanvas;
+        function requestFullscreenForElement(element) {
+            // For mobile devices, request screen orientation to landscape
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(err => {
+                    console.log('Could not lock orientation:', err);
+                });
+            }
+
+            // Request fullscreen with various browser prefixes
             if (element.requestFullscreen) {
                 element.requestFullscreen();
             } else if (element.webkitRequestFullscreen) {
                 element.webkitRequestFullscreen();
+            } else if (element.webkitRequestFullScreen) {
+                element.webkitRequestFullScreen();
             } else if (element.mozRequestFullScreen) {
                 element.mozRequestFullScreen();
             } else if (element.msRequestFullscreen) {
                 element.msRequestFullscreen();
+            } else {
+                console.log('Fullscreen API not supported');
+            }
+        }
+
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            } else {
+                console.log('Exit fullscreen API not supported');
             }
         }
 
@@ -287,6 +375,18 @@
             }
         }
 
+        // Handle orientation changes
+        function handleOrientationChange() {
+            // Update mobile controls after orientation change
+            setTimeout(() => {
+                updateMobileControls();
+                // Reinitialize joystick position after orientation change
+                if (window.initJoystickPosition) {
+                    window.initJoystickPosition();
+                }
+            }, 500);
+        }
+
         function initMobileControls() {
             if (!isMobileDevice()) return;
 
@@ -295,6 +395,10 @@
             document.addEventListener('webkitfullscreenchange', updateMobileControls);
             document.addEventListener('mozfullscreenchange', updateMobileControls);
             document.addEventListener('MSFullscreenChange', updateMobileControls);
+
+            // Listen for orientation changes
+            window.addEventListener('orientationchange', handleOrientationChange);
+            screen.orientation && screen.orientation.addEventListener('change', handleOrientationChange);
 
             // Get the canvas element for key events
             let canvas = null;
@@ -419,6 +523,9 @@
                 joystickRadius = rect.width / 2 - 20; // Account for knob size
             }
 
+            // Make initJoystick available globally for orientation changes
+            window.initJoystickPosition = initJoystick;
+
             function updateJoystick(touch) {
                 if (!joystickActive) return;
 
@@ -513,26 +620,58 @@
                     e.preventDefault();
                     e.stopPropagation();
                     button.classList.add('active');
-                    simulateKeyEvent(keyCode, 'keydown');
+                    if (keyCode) {
+                        simulateKeyEvent(keyCode, 'keydown');
+                    }
                 });
 
                 button.addEventListener('touchend', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     button.classList.remove('active');
-                    simulateKeyEvent(keyCode, 'keyup');
+                    if (keyCode) {
+                        simulateKeyEvent(keyCode, 'keyup');
+                    }
                 });
 
                 button.addEventListener('touchcancel', (e) => {
                     e.preventDefault();
                     button.classList.remove('active');
-                    simulateKeyEvent(keyCode, 'keyup');
+                    if (keyCode) {
+                        simulateKeyEvent(keyCode, 'keyup');
+                    }
                 });
 
                 button.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                 });
             });
+
+            // Exit fullscreen button handler
+            const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
+            if (exitFullscreenBtn) {
+                exitFullscreenBtn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    exitFullscreenBtn.classList.add('active');
+                });
+
+                exitFullscreenBtn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    exitFullscreenBtn.classList.remove('active');
+                    exitFullscreen();
+                });
+
+                exitFullscreenBtn.addEventListener('touchcancel', (e) => {
+                    e.preventDefault();
+                    exitFullscreenBtn.classList.remove('active');
+                });
+
+                exitFullscreenBtn.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                });
+            }
         }
 
         // Wait for dosbox to be ready
