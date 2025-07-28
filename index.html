@@ -12,13 +12,11 @@
         /* Mobile Touch Controls */
         .mobile-controls {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
+            position: relative;
             width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1000;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.8);
+            margin-top: 10px;
         }
 
         .mobile-controls.active {
@@ -56,10 +54,10 @@
         /* Aim Area - Right Side */
         .aim-area {
             position: absolute;
-            top: 0;
-            right: 0;
-            width: 50%;
-            height: 70%;
+            top: 20px;
+            right: 20px;
+            width: 45%;
+            height: 60%;
             background: rgba(255, 255, 255, 0.05);
             border: 2px dashed rgba(255, 255, 255, 0.2);
             pointer-events: auto;
@@ -171,7 +169,7 @@
         .btn-menu {
             position: absolute;
             top: 20px;
-            right: 20px;
+            left: 200px;
             width: 60px;
             height: 40px;
             background: rgba(128, 128, 128, 0.4);
@@ -184,63 +182,24 @@
             background: rgba(128, 128, 128, 0.7);
         }
 
-        /* Exit Fullscreen Button */
-        .btn-exit-fullscreen {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 80px;
-            height: 40px;
-            background: rgba(255, 100, 100, 0.4);
-            border-color: rgba(255, 100, 100, 0.6);
-            font-size: 11px;
-            pointer-events: auto;
-        }
 
-        .btn-exit-fullscreen:active {
-            background: rgba(255, 100, 100, 0.7);
-        }
 
         @media (max-width: 768px) {
-            .dosbox-container {
-                width: 100vw;
-                height: 60vh;
-                margin: 5% auto 0 auto;
+            .dosbox-container,
+            #dosbox {
+                width: 100% !important;
+                height: 50vh !important;
+                margin: 0 !important;
             }
         }
 
-        /* Fullscreen styles for any element */
-        :fullscreen,
-        :-webkit-full-screen,
-        :-moz-full-screen,
-        :-ms-fullscreen {
-            width: 100vw !important;
-            height: 100vh !important;
-            background: #000 !important;
-            object-fit: contain;
-        }
 
-        /* Mobile landscape orientation - ONLY in fullscreen and portrait mode */
-        @media screen and (orientation: portrait) and (max-width: 768px) {
-            :fullscreen,
-            :-webkit-full-screen,
-            :-moz-full-screen,
-            :-ms-fullscreen {
-                transform: rotate(90deg) !important;
-                transform-origin: center center !important;
-                width: 100vh !important;
-                height: 100vw !important;
-            }
-        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <div id="dosbox"></div>
-        <button class="wrapper" onclick="enterFullscreen();">
-            <a><span>FULLSCREEN</span></a>
-        </button>
     </div>
 
     <!-- Mobile Touch Controls -->
@@ -263,9 +222,6 @@
 
         <!-- Menu Button -->
         <div class="touch-button btn-menu" data-key="Escape">MENU</div>
-        
-        <!-- Exit Fullscreen Button -->
-        <div class="touch-button btn-exit-fullscreen" id="exitFullscreenBtn">EXIT FS</div>
     </div>
 
     <script type="text/javascript" src="./script.js"></script>
@@ -277,130 +233,32 @@
             },
             onrun: function (dosbox, app) {
                 console.log("App '" + app + "' is runned");
+                // Initialize mobile controls after the game is running
+                initMobileControls();
             }
         });
 
-        // Mobile Detection and Touch Controls
+        // Mobile Detection
         function isMobileDevice() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
                    (window.innerWidth <= 768 && 'ontouchstart' in window);
         }
 
-        function isFullscreen() {
-            return !!(document.fullscreenElement || document.webkitFullscreenElement || 
-                     document.mozFullScreenElement || document.msFullscreenElement);
-        }
-
-        function enterFullscreen() {
-            console.log('Attempting fullscreen using JS-DOS API');
-            
-            // First try the built-in JS-DOS fullscreen method
-            if (typeof dosbox !== 'undefined' && dosbox.requestFullScreen) {
-                console.log('Using dosbox.requestFullScreen()');
-                dosbox.requestFullScreen();
-                return;
-            }
-            
-            // Fallback to custom implementation
-            console.log('JS-DOS fullscreen not available, using fallback');
-            let targetElement = document.querySelector('.dosbox-canvas') || 
-                               document.querySelector('#dosbox') || 
-                               document.querySelector('.dosbox-container') ||
-                               document.documentElement;
-            
-            console.log('Attempting fullscreen on:', targetElement);
-            requestFullscreenForElement(targetElement);
-        }
-
-        function requestFullscreenForElement(element) {
-            console.log('Requesting fullscreen for element:', element);
-            
-            // For mobile devices, request screen orientation to landscape
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape-primary').catch(err => {
-                    console.log('Could not lock orientation to landscape-primary, trying landscape:', err);
-                    screen.orientation.lock('landscape').catch(err2 => {
-                        console.log('Could not lock orientation to landscape:', err2);
-                    });
-                });
-            }
-
-            // Request fullscreen with various browser prefixes
-            const requestFullscreen = element.requestFullscreen ||
-                                    element.webkitRequestFullscreen ||
-                                    element.webkitRequestFullScreen ||
-                                    element.mozRequestFullScreen ||
-                                    element.msRequestFullscreen;
-
-            if (requestFullscreen) {
-                requestFullscreen.call(element).then(() => {
-                    console.log('Fullscreen request successful');
-                }).catch(err => {
-                    console.log('Fullscreen request failed:', err);
-                });
-            } else {
-                console.log('Fullscreen API not supported');
-                // Fallback: try to simulate fullscreen with CSS
-                element.style.position = 'fixed';
-                element.style.top = '0';
-                element.style.left = '0';
-                element.style.width = '100vw';
-                element.style.height = '100vh';
-                element.style.zIndex = '9999';
-                element.style.background = '#000';
-            }
-        }
-
-        function exitFullscreen() {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.webkitCancelFullScreen) {
-                document.webkitCancelFullScreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-            } else {
-                console.log('Exit fullscreen API not supported');
-            }
-        }
-
         function updateMobileControls() {
             const mobileControls = document.getElementById('mobileControls');
-            if (isMobileDevice() && isFullscreen()) {
+            if (isMobileDevice()) {
                 mobileControls.classList.add('active');
-                console.log('Mobile fullscreen detected, showing touch controls');
+                console.log('Mobile device detected, showing touch controls');
             } else {
                 mobileControls.classList.remove('active');
             }
         }
 
-        // Handle orientation changes
-        function handleOrientationChange() {
-            // Update mobile controls after orientation change
-            setTimeout(() => {
-                updateMobileControls();
-                // Reinitialize joystick position after orientation change
-                if (window.initJoystickPosition) {
-                    window.initJoystickPosition();
-                }
-            }, 500);
-        }
-
         function initMobileControls() {
+            // Show mobile controls if on mobile device
+            updateMobileControls();
+            
             if (!isMobileDevice()) return;
-
-            // Listen for fullscreen changes
-            document.addEventListener('fullscreenchange', updateMobileControls);
-            document.addEventListener('webkitfullscreenchange', updateMobileControls);
-            document.addEventListener('mozfullscreenchange', updateMobileControls);
-            document.addEventListener('MSFullscreenChange', updateMobileControls);
-
-            // Listen for orientation changes
-            window.addEventListener('orientationchange', handleOrientationChange);
-            screen.orientation && screen.orientation.addEventListener('change', handleOrientationChange);
 
             // Get the canvas element for key events
             let canvas = null;
@@ -525,9 +383,6 @@
                 joystickRadius = rect.width / 2 - 20; // Account for knob size
             }
 
-            // Make initJoystick available globally for orientation changes
-            window.initJoystickPosition = initJoystick;
-
             function updateJoystick(touch) {
                 if (!joystickActive) return;
 
@@ -648,38 +503,17 @@
                     e.preventDefault();
                 });
             });
-
-            // Exit fullscreen button handler
-            const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
-            if (exitFullscreenBtn) {
-                exitFullscreenBtn.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    exitFullscreenBtn.classList.add('active');
-                });
-
-                exitFullscreenBtn.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    exitFullscreenBtn.classList.remove('active');
-                    exitFullscreen();
-                });
-
-                exitFullscreenBtn.addEventListener('touchcancel', (e) => {
-                    e.preventDefault();
-                    exitFullscreenBtn.classList.remove('active');
-                });
-
-                exitFullscreenBtn.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                });
-            }
         }
 
-        // Wait for dosbox to be ready
+        // Check for mobile on window resize
+        window.addEventListener('resize', () => {
+            updateMobileControls();
+        });
+
+        // Wait for page to be ready
         window.addEventListener('load', function() {
-            // Initialize mobile controls
-            initMobileControls();
+            // Initial mobile controls check
+            updateMobileControls();
         });
     </script>
 </body>
