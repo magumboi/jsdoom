@@ -8,6 +8,157 @@
     <title>JS DOOM 🕹</title>
     <link rel="stylesheet" type="text/css" href="./style.css">
     <link rel="stylesheet" type="text/css" href="./styles/button.css">
+    <style>
+        /* Mobile Touch Controls */
+        .mobile-controls {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .mobile-controls.active {
+            display: block;
+        }
+
+        .touch-button {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .touch-button:active {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* D-Pad */
+        .dpad {
+            bottom: 20px;
+            left: 20px;
+            width: 120px;
+            height: 120px;
+        }
+
+        .dpad-up {
+            top: 0;
+            left: 40px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .dpad-down {
+            bottom: 0;
+            left: 40px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .dpad-left {
+            left: 0;
+            top: 40px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .dpad-right {
+            right: 0;
+            top: 40px;
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 120px;
+        }
+
+        .btn-fire {
+            bottom: 40px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 0, 0, 0.3);
+            border-color: rgba(255, 0, 0, 0.5);
+        }
+
+        .btn-fire:active {
+            background: rgba(255, 0, 0, 0.5);
+        }
+
+        .btn-use {
+            bottom: 80px;
+            right: 120px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 255, 0, 0.3);
+            border-color: rgba(0, 255, 0, 0.5);
+        }
+
+        .btn-use:active {
+            background: rgba(0, 255, 0, 0.5);
+        }
+
+        .btn-run {
+            bottom: 10px;
+            right: 120px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 255, 0.3);
+            border-color: rgba(0, 0, 255, 0.5);
+        }
+
+        .btn-run:active {
+            background: rgba(0, 0, 255, 0.5);
+        }
+
+        /* Menu Buttons */
+        .menu-buttons {
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: 60px;
+        }
+
+        .btn-menu {
+            top: 0;
+            right: 60px;
+            width: 50px;
+            height: 50px;
+        }
+
+        .btn-map {
+            top: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .dosbox-container {
+                width: 100vw;
+                height: 60vh;
+                margin: 5% auto 0 auto;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -16,6 +167,30 @@
         <button class="wrapper" onclick="dosbox.requestFullScreen();">
             <a><span>FULLSCREEN</span></a>
         </button>
+    </div>
+
+    <!-- Mobile Touch Controls -->
+    <div class="mobile-controls" id="mobileControls">
+        <!-- D-Pad -->
+        <div class="dpad">
+            <div class="touch-button dpad-up" data-key="ArrowUp">↑</div>
+            <div class="touch-button dpad-down" data-key="ArrowDown">↓</div>
+            <div class="touch-button dpad-left" data-key="ArrowLeft">←</div>
+            <div class="touch-button dpad-right" data-key="ArrowRight">→</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <div class="touch-button btn-fire" data-key=" ">FIRE</div>
+            <div class="touch-button btn-use" data-key="Space">USE</div>
+            <div class="touch-button btn-run" data-key="Shift">RUN</div>
+        </div>
+
+        <!-- Menu Buttons -->
+        <div class="menu-buttons">
+            <div class="touch-button btn-menu" data-key="Escape">ESC</div>
+            <div class="touch-button btn-map" data-key="Tab">MAP</div>
+        </div>
     </div>
 
     <script type="text/javascript" src="./script.js"></script>
@@ -29,6 +204,102 @@
                 console.log("App '" + app + "' is runned");
             }
         });
+
+        // Mobile Detection and Touch Controls
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   (window.innerWidth <= 768 && 'ontouchstart' in window);
+        }
+
+        function initMobileControls() {
+            if (isMobileDevice()) {
+                const mobileControls = document.getElementById('mobileControls');
+                mobileControls.classList.add('active');
+                console.log('Mobile device detected, enabling touch controls');
+
+                // Get the canvas element for key events
+                let canvas = null;
+                const findCanvas = () => {
+                    canvas = document.querySelector('.dosbox-canvas');
+                    if (!canvas) {
+                        setTimeout(findCanvas, 100);
+                    }
+                };
+                findCanvas();
+
+                // Function to simulate key events
+                function simulateKeyEvent(keyCode, type) {
+                    if (!canvas) return;
+                    
+                    const event = new KeyboardEvent(type, {
+                        key: keyCode,
+                        code: keyCode,
+                        keyCode: keyCode === ' ' ? 32 : keyCode === 'ArrowUp' ? 38 : keyCode === 'ArrowDown' ? 40 : keyCode === 'ArrowLeft' ? 37 : keyCode === 'ArrowRight' ? 39 : keyCode === 'Escape' ? 27 : keyCode === 'Tab' ? 9 : keyCode === 'Shift' ? 16 : keyCode === 'Space' ? 32 : 0,
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    
+                    canvas.dispatchEvent(event);
+                    // Also dispatch to document for broader compatibility
+                    document.dispatchEvent(event);
+                }
+
+                // Add touch event listeners to all touch buttons
+                const touchButtons = document.querySelectorAll('.touch-button');
+                touchButtons.forEach(button => {
+                    const keyCode = button.getAttribute('data-key');
+                    
+                    // Handle touch start
+                    button.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        button.classList.add('active');
+                        simulateKeyEvent(keyCode, 'keydown');
+                    });
+
+                    // Handle touch end
+                    button.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        button.classList.remove('active');
+                        simulateKeyEvent(keyCode, 'keyup');
+                    });
+
+                    // Handle touch cancel (when finger moves off button)
+                    button.addEventListener('touchcancel', (e) => {
+                        e.preventDefault();
+                        button.classList.remove('active');
+                        simulateKeyEvent(keyCode, 'keyup');
+                    });
+
+                    // Prevent context menu on long press
+                    button.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                    });
+                });
+
+                // Special handling for directional pad - allow diagonal movement
+                const dpadButtons = document.querySelectorAll('.dpad .touch-button');
+                let activeDirections = new Set();
+
+                dpadButtons.forEach(button => {
+                    const keyCode = button.getAttribute('data-key');
+                    
+                    button.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        activeDirections.add(keyCode);
+                    });
+
+                    button.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        activeDirections.delete(keyCode);
+                    });
+
+                    button.addEventListener('touchcancel', (e) => {
+                        e.preventDefault();
+                        activeDirections.delete(keyCode);
+                    });
+                });
+            }
+        }
 
         // Automatically click the dosbox-start button after first user interaction
         var hasUserInteracted = false;
@@ -63,6 +334,9 @@
         
         // Wait for dosbox to be ready
         window.addEventListener('load', function() {
+            // Initialize mobile controls
+            initMobileControls();
+            
             setTimeout(function() {
                 dosboxReady = true;
                 console.log("Dosbox ready, waiting for user interaction");
