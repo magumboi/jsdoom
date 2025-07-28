@@ -292,7 +292,17 @@
         }
 
         function enterFullscreen() {
-            // Try multiple approaches to find the game container
+            console.log('Attempting fullscreen using JS-DOS API');
+            
+            // First try the built-in JS-DOS fullscreen method
+            if (typeof dosbox !== 'undefined' && dosbox.requestFullScreen) {
+                console.log('Using dosbox.requestFullScreen()');
+                dosbox.requestFullScreen();
+                return;
+            }
+            
+            // Fallback to custom implementation
+            console.log('JS-DOS fullscreen not available, using fallback');
             let targetElement = document.querySelector('.dosbox-canvas') || 
                                document.querySelector('#dosbox') || 
                                document.querySelector('.dosbox-container') ||
